@@ -1,0 +1,27 @@
+- key: cohrs2025shrugfmreliabilityawarefoundationmodels
+  type: misc
+  title: "SHRUG-FM: Reliability-Aware Foundation Models for Earth Observation"
+  author: "Kai-Hendrik Cohrs and Zuzanna Osika and Maria Gonzalez-Calabuig and Vishal Nedungadi and Ruben Cartuyvels and Steffen Knoblauch and Joppe Massant and Shruti Nath and Patrick Ebel and Vasileios Sitokonstantinou"
+  year: "2025"
+  eprint: "2511.10370"
+  archivePrefix: arXiv
+  primaryClass: cs.CV
+  url: "https://arxiv.org/abs/2511.10370"
+  html: "https://arxiv.org/abs/2511.10370"
+  preview: shrugfm.png
+  selected: true
+  additional_info: "CCAI Workshop, NeurIPS"
+
+- key: nedungadi2025generalspecializedneedfoundational
+  type: misc
+  title: "From General to Specialized: The Need for Foundational Models in Agriculture"
+  author: "Vishal Nedungadi and Xingguo Xiong and Aike Potze and Ron Van Bree and Tao Lin and Marc Rußwurm and Ioannis N. Athanasiadis"
+  year: "2025"
+  eprint: "2507.05390"
+  archivePrefix: arXiv
+  primaryClass: cs.CV
+  url: "https://arxiv.org/abs/2507.05390"
+  html: "https://arxiv.org/abs/2507.05390"
+  preview: crop.png
+  selected: true
+  additional_info: "SEA Workshop, ICCV"
