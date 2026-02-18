@@ -20,8 +20,9 @@
     width: 100%;
     min-height: 100vh;
     background: transparent url('http://www.script-tutorials.com/demos/360/images/twinkling.png') repeat top center;
+    background-attachment: fixed;
+    /* Crucial for long pages to keep ripples in viewport */
     position: relative;
-    /* Removed z-index to avoid layering issues with plugin canvas */
     animation: move-twink-back 200s linear infinite;
 }
 
@@ -69,7 +70,8 @@ body {
 
 /* Navigation */
 .navbar {
-    background-color: transparent;
+    background-color: transparent !important;
+    /* Ensure nothing hides the ripples */
     padding: 1rem 0;
     position: sticky;
     top: 0;
