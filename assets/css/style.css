@@ -5,19 +5,23 @@
     box-sizing: border-box;
 }
 
-/* Ripple Background */
+@keyframes move-twink-back {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: -10000px 5000px;
+    }
+}
+
+/* Ripple Background / Wrapper */
 #ripple-bg {
-    position: fixed;
     width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    background-image: url('../img/background.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-color: transparent !important;
+    min-height: 100vh;
+    background: transparent url('http://www.script-tutorials.com/demos/360/images/twinkling.png') repeat top center;
+    z-index: 1;
+    animation: move-twink-back 200s linear infinite;
 }
 
 html {
@@ -29,7 +33,7 @@ body {
     font-family: 'Monaco', 'Menlo', 'Courier New', 'Consolas', monospace;
     line-height: 1.6;
     color: #d4d4d4;
-    background-color: transparent !important;
+    background: #000 url('http://www.script-tutorials.com/demos/360/images/stars.png') repeat top center;
     min-height: 100vh;
     animation: fadeIn 2.5s ease-in-out;
 }
