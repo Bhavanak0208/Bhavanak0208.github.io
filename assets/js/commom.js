@@ -1,9 +1,8 @@
 // Function to initialize or update ripples
 function updateRipples() {
     try {
-        const jQ = window.jQuery;
-        if (typeof jQ !== 'undefined' && jQ.fn.ripples) {
-            const $bg = jQ('#ripple-bg');
+        if (typeof jQuery !== 'undefined' && jQuery.fn.ripples) {
+            const $bg = jQuery('#ripple-bg');
             if ($bg.length) {
                 if (!$bg.data('ripples')) {
                     $bg.ripples({
@@ -34,40 +33,36 @@ async function loadConfig() {
     }
 }
 
-// Initialize everything
-(function ($) {
-    $(document).ready(function () {
-        // Initial init
-        updateRipples();
+// Initialize everything on DOM ready
+jQuery(function ($) {
+    // Initial init
+    updateRipples();
 
-        // Initial config load
-        loadConfig().then(config => {
-            if (config) {
-                if (config.nav) {
-                    const navContainer = $('.nav-container');
-                    if (navContainer.length) {
-                        navContainer.empty();
-                        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-                        config.nav.forEach(item => {
-                            $('<a>')
-                                .attr('href', item.link)
-                                .addClass('nav-link')
-                                .toggleClass('active', item.link === currentPath)
-                                .text(item.label)
-                                .appendTo(navContainer);
-                        });
-                    }
-                }
+    // Initial config load
+    loadConfig().then(config => {
+        if (config && config.nav) {
+            const navContainer = $('.nav-container');
+            if (navContainer.length) {
+                navContainer.empty();
+                const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+                config.nav.forEach(item => {
+                    $('<a>')
+                        .attr('href', item.link)
+                        .addClass('nav-link')
+                        .toggleClass('active', item.link === currentPath)
+                        .text(item.label)
+                        .appendTo(navContainer);
+                });
             }
-            // Update ripples after any potential nav rendering
-            updateRipples();
-        });
-
-        // Periodic updates for dynamic content/resizes
-        $(window).on('resize', updateRipples);
-
-        // Final fallback checks
-        setTimeout(updateRipples, 200);
-        setTimeout(updateRipples, 1000);
+        }
+        // Update ripples after potential nav rendering
+        updateRipples();
     });
-})(window.jQuery);
+
+    // Event listeners
+    $(window).on('resize', updateRipples);
+
+    // Fallback checks
+    setTimeout(updateRipples, 250);
+    setTimeout(updateRipples, 1000);
+});
