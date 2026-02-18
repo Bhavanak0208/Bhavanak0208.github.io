@@ -7,7 +7,12 @@ function parseColorHighlights(text) {
 // Simple markdown link parser
 function parseMarkdownLinks(text) {
     // Convert [text](url) to <a href="url">text</a>
-    return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    // Convert plain URLs to links
+    text = text.replace(/(?<!href=")(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+    // Convert email addresses
+    text = text.replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '<a href="mailto:$1">$1</a>');
+    return text;
 }
 
 // Parse bold markdown (**text** or ***text*** to <strong>text</strong>)
@@ -62,8 +67,8 @@ async function renderPublications() {
             // Normalize "Last, First" format to "First Last"
             authors = authors.replace(/([A-Za-z]+),\s*([A-Za-z]+)/g, '$2 $1');
             authors = authors.replace(/\s+and\s+/gi, ', ');
-            // Highlight "Aniket Junghare" (case insensitive) - just make it bold, not teal
-            authors = authors.replace(/(Aniket\s+Junghare)/gi, '<strong>$1</strong>');
+            // Highlight "Bhavana K" (case insensitive) - just make it bold, not teal
+            authors = authors.replace(/(Bhavana\s+K)/gi, '<strong>$1</strong>');
 
             // Build meta information (remove arXiv)
             let meta = [];
@@ -98,8 +103,15 @@ async function renderPublications() {
         container.innerHTML = papersHTML;
         // Colorize links immediately after rendering
         colorizeLinksInElement(container);
+        // Update ripple background size
+        if (typeof updateRipples === 'function') {
+            updateRipples();
+        }
     } catch (error) {
         console.error('Error loading publications data:', error);
+        if (typeof updateRipples === 'function') {
+            updateRipples();
+        }
     }
 }
 
