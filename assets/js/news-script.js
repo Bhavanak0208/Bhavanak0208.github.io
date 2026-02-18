@@ -30,8 +30,15 @@ async function renderNews() {
         container.innerHTML = newsItems;
         // Colorize links immediately after rendering
         colorizeLinksInElement(container);
+        // Update ripple background size
+        if (typeof updateRipples === 'function') {
+            updateRipples();
+        }
     } catch (error) {
         console.error('Error loading news data:', error);
+        if (typeof updateRipples === 'function') {
+            updateRipples();
+        }
     }
 }
 
@@ -43,7 +50,13 @@ function parseColorHighlights(text) {
 
 // Simple markdown link parser
 function parseMarkdownLinks(text) {
-    return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    // Convert [text](url) to <a href="url">text</a>
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    // Convert plain URLs to links
+    text = text.replace(/(?<!href=")(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+    // Convert email addresses
+    text = text.replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '<a href="mailto:$1">$1</a>');
+    return text;
 }
 
 // Parse bold markdown
