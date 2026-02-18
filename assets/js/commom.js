@@ -7,7 +7,7 @@ function updateRipples() {
                 if (!$bg.data('ripples')) {
                     $bg.ripples({
                         resolution: 512,
-                        dropRadius: 20,
+                        dropRadius: 15,
                         perturbance: 0.04,
                         interactive: true
                     });
