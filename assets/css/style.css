@@ -5,26 +5,25 @@
     box-sizing: border-box;
 }
 
-@keyframes move-twink-back {
+/* Page Transition Animations */
+@keyframes fadeIn {
     from {
-        background-position: 0 0;
+        opacity: 0;
     }
 
     to {
-        background-position: -10000px 5000px;
+        opacity: 1;
     }
 }
 
 /* Ripple Background / Wrapper */
-/* Ripple Background / Wrapper */
 #ripple-bg {
     width: 100%;
     min-height: 100vh;
-    background: transparent url('http://www.script-tutorials.com/demos/360/images/twinkling.png') repeat top center;
+    background: #000;
     position: relative;
     z-index: 1;
     /* Creates a stacking context for the plugin's background replacement */
-    animation: move-twink-back 200s linear infinite;
 }
 
 html {
@@ -42,19 +41,16 @@ body {
     animation: fadeIn 2.5s ease-in-out;
 }
 
-/* Page Transition Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
 
-    to {
-        opacity: 1;
-    }
-}
 
 .container {
     animation: slideIn 2.8s ease-out;
+    background: transparent !important;
+}
+
+section,
+.section {
+    background: transparent !important;
 }
 
 @keyframes slideIn {
