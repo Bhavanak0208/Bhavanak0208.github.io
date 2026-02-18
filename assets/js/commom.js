@@ -49,10 +49,37 @@ function updatePageTitle(config) {
     // document.title = `${config.name} - ${config.role}`;
 }
 
+// Function to initialize or update ripples
+function updateRipples() {
+    if (typeof $ !== 'undefined' && $.fn.ripples) {
+        const $bg = $('#ripple-bg');
+        if ($bg.length) {
+            if (!$bg.data('ripples')) {
+                // Initialize if not already done
+                $bg.ripples({
+                    resolution: 512,
+                    dropRadius: 15,
+                    perturbance: 0.04,
+                    interactive: true
+                });
+            } else {
+                // Update size if already initialized
+                $bg.ripples('updateSize');
+            }
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initial ripple setup
+    updateRipples();
+
     const config = await loadConfig();
     if (config) {
         renderNavbar(config);
         updatePageTitle(config);
     }
+
+    // Final ripple update after a short delay to account for layout shifts
+    setTimeout(updateRipples, 100);
 });
