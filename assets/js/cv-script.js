@@ -1,6 +1,12 @@
 // Parse markdown links [text](url)
 function parseMarkdownLinks(text) {
-    return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    // Convert [text](url) to <a href="url">text</a>
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    // Convert plain URLs to links
+    text = text.replace(/(?<!href=")(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+    // Convert email addresses
+    text = text.replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '<a href="mailto:$1">$1</a>');
+    return text;
 }
 
 // Parse colorful highlights [[text]]
@@ -75,6 +81,12 @@ async function renderCV() {
         }).join('');
 
         container.innerHTML = cvHTML;
+        // Colorize links immediately after rendering
+        colorizeLinksInElement(container);
+        // Update ripple background size using common function
+        if (typeof updateRipples === 'function') {
+            updateRipples();
+        }
     } catch (error) {
         console.error('Error loading CV data:', error);
     }
@@ -87,17 +99,29 @@ const brightColors = [
     '#e91e63', '#00bcd4',
 ];
 
-// Randomly assign colors to all links
-function colorizeLinks() {
-    const links = document.querySelectorAll('a, .colored-highlight');
+// Colorize links in a specific element
+function colorizeLinksInElement(element) {
+    const links = element.querySelectorAll('a, .colored-highlight');
     links.forEach(link => {
         const randomColor = brightColors[Math.floor(Math.random() * brightColors.length)];
         link.style.color = randomColor;
     });
 }
 
+// Randomly assign colors to all links (fallback)
+function colorizeLinks() {
+    const links = document.querySelectorAll('a, .colored-highlight');
+    links.forEach(link => {
+        if (!link.style.color || link.style.color === 'rgb(78, 201, 176)') {
+            const randomColor = brightColors[Math.floor(Math.random() * brightColors.length)];
+            link.style.color = randomColor;
+        }
+    });
+}
+
 // Initialize page
 document.addEventListener('DOMContentLoaded', () => {
     renderCV();
+    // Colorize any remaining links (like nav links) after a short delay
     setTimeout(colorizeLinks, 50);
 });
