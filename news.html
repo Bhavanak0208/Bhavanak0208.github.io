@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News - Bhavana K</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+</head>
+
+<body>
+    <!-- Wave (Ripple) Background Animation -->
+    <div id="ripple-bg"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="news.html" class="nav-link">News</a>
+            <a href="publications.html" class="nav-link">Publications</a>
+            <a href="cv.html" class="nav-link">CV</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section id="news" class="section">
+            <h1>News</h1>
+            <div id="news-container"></div>
+        </section>
+    </main>
+
+    <script src="assets/js/news-script.js"></script>
+
+    <!-- Wave Animation Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="assets/js/plugins/ripples.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#ripple-bg').ripples({
+                resolution: 512,
+                dropRadius: 15,
+                perturbance: 0.04,
+            });
+        });
+    </script>
+</body>
+
+</html>
