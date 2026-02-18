@@ -16,13 +16,14 @@
 }
 
 /* Ripple Background / Wrapper */
+/* Ripple Background / Wrapper */
 #ripple-bg {
     width: 100%;
     min-height: 100vh;
     background: transparent url('http://www.script-tutorials.com/demos/360/images/twinkling.png') repeat top center;
-    background-attachment: fixed;
-    /* Crucial for long pages to keep ripples in viewport */
     position: relative;
+    z-index: 1;
+    /* Creates a stacking context for the plugin's background replacement */
     animation: move-twink-back 200s linear infinite;
 }
 
