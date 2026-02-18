@@ -1,85 +1,73 @@
-// Common functionality for all pages
+// Function to initialize or update ripples
+function updateRipples() {
+    try {
+        const jQ = window.jQuery;
+        if (typeof jQ !== 'undefined' && jQ.fn.ripples) {
+            const $bg = jQ('#ripple-bg');
+            if ($bg.length) {
+                if (!$bg.data('ripples')) {
+                    $bg.ripples({
+                        resolution: 512,
+                        dropRadius: 20,
+                        perturbance: 0.04,
+                        interactive: true
+                    });
+                } else {
+                    $bg.ripples('updateSize');
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('Ripples update failed:', e);
+    }
+}
 
+// Config loading
 async function loadConfig() {
     try {
         const response = await fetch('data/config.yaml');
+        if (!response.ok) return null;
         const yamlText = await response.text();
-        const config = jsyaml.load(yamlText);
-        return config;
-    } catch (error) {
-        console.error('Error loading config:', error);
+        return jsyaml.load(yamlText);
+    } catch (e) {
         return null;
     }
 }
 
-async function renderNavbar(config) {
-    if (!config || !config.nav) return;
+// Initialize everything
+(function ($) {
+    $(document).ready(function () {
+        // Initial init
+        updateRipples();
 
-    const navContainer = document.querySelector('.nav-container');
-    if (!navContainer) return;
-
-    // Clear existing static nav if any (though we will likely empty it in HTML)
-    navContainer.innerHTML = '';
-
-    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-
-    config.nav.forEach(item => {
-        const link = document.createElement('a');
-        link.href = item.link;
-        link.className = 'nav-link';
-        link.textContent = item.label;
-
-        // Highlight active link
-        if (item.link === currentPath) {
-            // You could add an 'active' class here if you have styles for it
-            // link.classList.add('active');
-        }
-
-        navContainer.appendChild(link);
-    });
-}
-
-function updatePageTitle(config) {
-    if (!config) return;
-
-    // Optional: Dynamic title update
-    // const currentTitle = document.title;
-    // if (currentTitle.includes('Aniket Junghare')) return; // Already set manually
-
-    // document.title = `${config.name} - ${config.role}`;
-}
-
-// Function to initialize or update ripples
-function updateRipples() {
-    if (typeof $ !== 'undefined' && $.fn.ripples) {
-        const $bg = $('#ripple-bg');
-        if ($bg.length) {
-            if (!$bg.data('ripples')) {
-                // Initialize if not already done
-                $bg.ripples({
-                    resolution: 512,
-                    dropRadius: 15,
-                    perturbance: 0.04,
-                    interactive: true
-                });
-            } else {
-                // Update size if already initialized
-                $bg.ripples('updateSize');
+        // Initial config load
+        loadConfig().then(config => {
+            if (config) {
+                if (config.nav) {
+                    const navContainer = $('.nav-container');
+                    if (navContainer.length) {
+                        navContainer.empty();
+                        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+                        config.nav.forEach(item => {
+                            $('<a>')
+                                .attr('href', item.link)
+                                .addClass('nav-link')
+                                .toggleClass('active', item.link === currentPath)
+                                .text(item.label)
+                                .appendTo(navContainer);
+                        });
+                    }
+                }
             }
-        }
-    }
-}
+            // Update ripples after any potential nav rendering
+            updateRipples();
+        });
 
-document.addEventListener('DOMContentLoaded', async () => {
-    // Initial ripple setup
-    updateRipples();
+        // Periodic updates for dynamic content/resizes
+        $(window).on('resize', updateRipples);
 
-    const config = await loadConfig();
-    if (config) {
-        renderNavbar(config);
-        updatePageTitle(config);
-    }
-
-    // Final ripple update after a short delay to account for layout shifts
-    setTimeout(updateRipples, 100);
-});
+        // Final fallback checks
+        setTimeout(updateRipples, 200);
+        setTimeout(updateRipples, 1000);
+    });
+})(window.jQuery);
