@@ -1,55 +1,3 @@
-// Parse colorful highlights [[text]]
-function parseColorHighlights(text) {
-    // Convert [[text]] to <span class="colored-highlight">text</span>
-    return text.replace(/\[\[([^\]]+)\]\]/g, '<span class="colored-highlight">$1</span>');
-}
-
-// Simple markdown link parser
-function parseMarkdownLinks(text) {
-    // Convert [text](url) to <a href="url">text</a>
-    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-    // Convert plain URLs to links (if not already inside an <a> tag)
-    text = text.replace(/(?<!href=")(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
-    // Convert email addresses to mailto links
-    text = text.replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '<a href="mailto:$1">$1</a>');
-    return text;
-}
-
-// Parse bold markdown (**text** or ***text*** to <strong>text</strong>)
-function parseBold(text) {
-    // Handle triple asterisks first
-    text = text.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong>$1</strong>');
-    // Then handle double asterisks
-    text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-    return text;
-}
-
-// Parse highlights into button-like badges - put everything in one badge
-function parseHighlights(text) {
-    // First, parse bold markdown to get <strong> tags
-    text = parseBold(text);
-
-    // Remove all <strong> tags and asterisks, keep the content
-    text = text.replace(/<strong>([^<]+)<\/strong>/g, '$1');
-    text = text.replace(/\*+/g, '');
-
-    // Clean up the text - remove extra spaces
-    text = text.trim();
-
-    // Handle "at" patterns - remove "at" and keep the rest
-    text = text.replace(/\s+at\s+/gi, ' ');
-
-    // Put everything in one badge
-    return `<span class="highlight-badge">${text}</span>`;
-}
-
-// Format date for display
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
-}
-
 // Render About section
 async function renderAbout() {
     try {
@@ -58,7 +6,6 @@ async function renderAbout() {
         const data = jsyaml.load(yamlText);
         const aboutText = document.getElementById('about-text');
 
-        // Convert markdown to HTML (YAML preserves newlines)
         const lines = data.content.split('\n');
         let html = '';
         let inList = false;
@@ -66,186 +13,73 @@ async function renderAbout() {
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
 
-            // Handle list items
             if (line.trim().startsWith('- ')) {
                 if (!inList) {
                     html += '<ul>';
                     inList = true;
                 }
-                html += `<li>${parseColorHighlights(parseBold(parseMarkdownLinks(line.trim().substring(2))))}</li>`;
+                html += `<li>${formatText(line.trim().substring(2))}</li>`;
             } else if (line.trim() === '') {
-                // Empty line - close list if open, add paragraph break
                 if (inList) {
                     html += '</ul>';
                     inList = false;
                 }
-                // Skip empty lines
             } else if (line.trim()) {
-                // Regular paragraph
                 if (inList) {
                     html += '</ul>';
                     inList = false;
                 }
-                html += `<p>${parseColorHighlights(parseBold(parseMarkdownLinks(line.trim())))}</p>`;
+                html += `<p>${formatText(line.trim())}</p>`;
             }
         }
 
-        if (inList) {
-            html += '</ul>';
-        }
+        if (inList) html += '</ul>';
 
         aboutText.innerHTML = html;
-        // Colorize links immediately after rendering
         colorizeLinksInElement(aboutText);
-        // Update ripple background size
-        $('#ripple-bg').ripples('updateSize');
     } catch (error) {
         console.error('Error loading about data:', error);
-        $('#ripple-bg').ripples('updateSize');
     }
 }
 
-// Render News section
-async function renderNews() {
+// Render contact icons on the About/Home page
+async function renderAboutGeneralInfo() {
     try {
-        const response = await fetch('data/news.yaml');
+        const response = await fetch('data/cv.yaml');
         const yamlText = await response.text();
-        const news = jsyaml.load(yamlText);
-        const container = document.getElementById('news-container');
+        const cvSections = jsyaml.load(yamlText);
+        const container = document.getElementById('about-general-info');
+        if (!container) return;
 
-        const newsItems = news.map(item => {
-            const content = parseColorHighlights(parseBold(parseMarkdownLinks(item.content)));
-            return `<li>${content}</li>`;
-        }).join('');
+        const generalSection = cvSections.find(s => s.title.toLowerCase().includes('general information'));
+        if (!generalSection) return;
 
-        container.innerHTML = `<ul class="news-list">${newsItems}</ul>`;
-        // Colorize links immediately after rendering
-        colorizeLinksInElement(container);
-        // Update ripple background size
-        if (typeof updateRipples === 'function') {
-            updateRipples();
-        }
-    } catch (error) {
-        console.error('Error loading news data:', error);
-        if (typeof updateRipples === 'function') {
-            updateRipples();
-        }
-    }
-}
+        const iconMap = {
+            'email': 'fa-solid fa-envelope',
+            'linkedin': 'fa-brands fa-linkedin'
+        };
 
-// Render Publications section
-async function renderPublications() {
-    try {
-        const response = await fetch('data/papers.yaml');
-        const yamlText = await response.text();
-        const papers = jsyaml.load(yamlText);
-        const container = document.getElementById('publications-container');
+        container.innerHTML = generalSection.contents.map(item => {
+            const key = item.name.toLowerCase();
+            const icon = iconMap[key];
+            if (!icon) return '';
 
-        // Sort by year (newest first)
-        papers.sort((a, b) => parseInt(b.year) - parseInt(a.year));
-
-        const papersHTML = papers.map(paper => {
-            const preview = paper.preview ?
-                `<img src="assets/img/publication_preview/${paper.preview}" alt="${paper.title}" class="publication-preview">` :
-                '';
-
-            const titleLink = paper.html || paper.url || '#';
-            const title = `<a href="${titleLink}" target="_blank" rel="noopener noreferrer">${paper.title}</a>`;
-
-            // Process authors: replace "and" with commas, normalize format, highlight "Vishal Nedungadi"
-            let authors = paper.author || '';
-            // Normalize "Last, First" format to "First Last"
-            authors = authors.replace(/([A-Za-z]+),\s*([A-Za-z]+)/g, '$2 $1');
-            authors = authors.replace(/\s+and\s+/gi, ', ');
-            // Highlight "Bhavana K" (case insensitive) - just make it bold, not teal
-            authors = authors.replace(/(Bhavana\s+K)/gi, '<strong>$1</strong>');
-
-            // Build meta information (remove arXiv)
-            let meta = [];
-            if (paper.year) meta.push(paper.year);
-            if (paper.booktitle) meta.push(paper.booktitle);
-            if (paper.organization) meta.push(paper.organization);
-
-            // Build links (only Paper, no arXiv)
-            let links = [];
-            if (paper.html) {
-                links.push(`<a href="${paper.html}" target="_blank" rel="noopener noreferrer">Paper</a>`);
-            } else if (paper.url) {
-                links.push(`<a href="${paper.url}" target="_blank" rel="noopener noreferrer">Paper</a>`);
+            if (key === 'email') {
+                return `<div class="info-item"><a href="mailto:${item.value}" class="social-icon" title="${item.value}"><i class="${icon}"></i></a></div>`;
+            } else if (key === 'linkedin') {
+                return `<div class="info-item"><a href="${item.value}" target="_blank" rel="noopener noreferrer" class="social-icon" title="LinkedIn Profile"><i class="${icon}"></i></a></div>`;
+            } else {
+                const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.value)}`;
+                return `<div class="info-item"><i class="${icon}"></i><a href="${mapsUrl}" target="_blank" rel="noopener noreferrer">${item.value}</a></div>`;
             }
-
-            const selectedClass = paper.selected ? 'selected' : '';
-
-            return `
-                <div class="publication ${selectedClass}">
-                    ${preview}
-                    <div class="publication-content">
-                        <div class="publication-title">${title}</div>
-                        <div class="publication-authors">${authors}</div>
-                        <div class="publication-meta">${meta.join(' • ')}</div>
-                        ${links.length > 0 ? `<div class="publication-links">${links.join('')}</div>` : ''}
-                        ${paper.additional_info ? `<div class="publication-additional">${parseColorHighlights(parseHighlights(parseMarkdownLinks(paper.additional_info)))}</div>` : ''}
-                    </div>
-                </div>
-            `;
         }).join('');
-
-        container.innerHTML = papersHTML;
-        // Colorize links immediately after rendering
-        colorizeLinksInElement(container);
-        // Update ripple background size
-        if (typeof updateRipples === 'function') {
-            updateRipples();
-        }
     } catch (error) {
-        console.error('Error loading publications data:', error);
-        if (typeof updateRipples === 'function') {
-            updateRipples();
-        }
+        console.error('Error loading about general info:', error);
     }
 }
 
-// Bright colors for links
-const brightColors = [
-    '#4ec9b0', // teal/cyan
-    '#ff6b9d', // pink
-    '#ffd93d', // yellow
-    '#6bcf7f', // green
-    '#ff8c42', // orange
-    '#9b59b6', // purple
-    '#3498db', // blue
-    '#e74c3c', // red
-    '#1abc9c', // turquoise
-    '#f39c12', // amber
-    '#e91e63', // magenta
-    '#00bcd4', // cyan
-];
-
-// Colorize links in a specific element (for immediate coloring after rendering)
-function colorizeLinksInElement(element) {
-    const links = element.querySelectorAll('a, .colored-highlight');
-    links.forEach(link => {
-        const randomColor = brightColors[Math.floor(Math.random() * brightColors.length)];
-        link.style.color = randomColor;
-    });
-}
-
-// Randomly assign colors to all links (fallback for any links that might be missed)
-function colorizeLinks() {
-    const links = document.querySelectorAll('a, .colored-highlight');
-    links.forEach(link => {
-        // Only colorize if not already colored
-        if (!link.style.color || link.style.color === 'rgb(78, 201, 176)') {
-            const randomColor = brightColors[Math.floor(Math.random() * brightColors.length)];
-            link.style.color = randomColor;
-        }
-    });
-}
-
-// Initialize page
+// Global initialization call
 document.addEventListener('DOMContentLoaded', () => {
     renderAbout();
-
-    // Colorize any remaining links (like nav links) after a short delay
-    setTimeout(colorizeLinks, 50);
+    renderAboutGeneralInfo();
 });
