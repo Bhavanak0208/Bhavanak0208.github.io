@@ -53,10 +53,11 @@
     top: 0;
     left: 0;
     z-index: 0;
-    background: url('../../Earth.png') no-repeat center center fixed;
-    background-size: cover;
+    background: #000 url('../../Earth.png') no-repeat center center fixed;
+    background-size: contain;
     pointer-events: auto;
 }
+
 
 
 
