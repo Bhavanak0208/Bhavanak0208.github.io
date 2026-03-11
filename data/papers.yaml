@@ -1,23 +1,21 @@
-- key: nedungadi2025aircastimprovingairpollution
+- key: bhavanapredwti
   type: misc
-  title: "AirCast: Improving Air Pollution Forecasting Through Multi-Variable Data Alignment"
-  author: "Vishal Nedungadi and Muhammad Akhtar Munir and Marc Rußwurm and Ron Sarafian and Ioannis N. Athanasiadis and Yinon Rudich and Fahad Shahbaz Khan and Salman Khan"
-  year: "2025"
-  eprint: "2502.17919"
-  archivePrefix: arXiv
+  title: "Predicting the future land use and land cover changes for Saroor Nagar Watershed, Telangana, India, using open-source GIS"
+  author: "Shiva Chandra Vaddiraju and Reshma Talari and K. Bhavana and S. Apsana"
+  year: "2023"
   primaryClass: cs.LG
-  url: "https://arxiv.org/abs/2502.17919"
-  html: "https://arxiv.org/abs/2502.17919"
-  preview: aircast.png
+  url: "https://link.springer.com/article/10.1007/s10661-023-12128-2"
+  html: "https://link.springer.com/article/10.1007/s10661-023-12128-2"
+  preview: predicting_lulc.png
   selected: true
-  additional_info: "Best Paper Award at TerraBytes Workshop, ICML"
+  additional_info: "Springer"
 
-- key: nedungadi2024mmearth
+- key: bhavanaeecsvmsi
   type: inproceedings
-  title: "MMEarth: Exploring multi-modal pretext tasks for geospatial representation learning"
-  author: "Vishal Nedungadi and Ankit Kariryaa and Stefan Oehmcke and Serge Belongie and Christian Igel and Nico Lang"
-  year: "2024"
-  additional_info: "ECCV"
-  preview: mmearth.png
+  title: "Extraction of Waterbodies using Support Vector Machine and Spectral Indices"
+  author: "Shiva Chandra Vaddiraju and K. Bhavana and Apsana Shaik and R. Akhila and K. Sreeja"
+  year: "2022"
+  additional_info: "Ecology, Environment and Conservation"
+  preview: extract_waterbodies.png
   selected: true
-  html: "https://vishalned.github.io/mmearth"
+  html: "https://www.envirobiotechjournals.com/EEC/vol28issue2/EEC-46.pdf"
